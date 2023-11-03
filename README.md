@@ -18,11 +18,10 @@
 </ul>
 
 ### spider_works-配置说明
-cookie：  你的cookie
-
-spider_list： 爬取账号可以是list 也可以是str
-
-time_sleep：间隔时间 不设置为默认
-
-page_num：爬取页码数
+|项目|参数|说明|
+|:---:|:---:|:---:|
+|weibo|cookie|你的cookie|
+|weibo|spider_list|爬取账号可以是list 也可以是str|
+|weibo|time_sleep|间隔时间 不设置为默认|
+|weibo|page_num|爬取页码数|
 
