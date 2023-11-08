@@ -17,7 +17,7 @@
     <li>...</li>
 </ul>
 
-### spider_works-配置说明
+### spider_works-example_config.ini 配置说明
 |项目|参数|说明|
 |:---:|:---:|:---:|
 |weibo|cookie|你的cookie|
