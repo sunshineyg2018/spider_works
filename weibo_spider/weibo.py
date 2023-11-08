@@ -4,14 +4,14 @@
 # Author: 
 # Date:   2023/11/1
 # -------------------------------------------------------------------------------
+
 import random
 import time
+from loguru import logger
 
 from utils import DisposeIni
 import requests
 import os
-
-from weibo_spider import logger
 
 
 class WeiBoFac:
@@ -55,7 +55,7 @@ class WeiBoFac:
     def __get_account_info(self,uid):
         """获取账户信息"""
         try:
-            url = "https://weibo.com/ajax/profile/info?uid={}"
+            url = f"https://weibo.com/ajax/profile/info?uid={uid}"
             res = requests.get(url, headers=self.headers)
             if res.status_code == 200:
                 res_json = res.json()
@@ -67,6 +67,7 @@ class WeiBoFac:
 
     def __get_weibo_article(self, uid):
         """获取微博作者所发所有信息"""
+
         def get_article_data(page):
             url = f"https://weibo.com/ajax/statuses/mymblog?uid={uid}&page={page}&feature=0"
             res = requests.get(url, headers=self.headers)
@@ -93,13 +94,15 @@ class WeiBoFac:
 
         # 获取按页数爬取的参数
         page_num = self.ini.get("page_num","")
+
         if page_num != "" and isinstance(page_num,int):
             for n in range(page_num):
                 n += 1
-                logger.info(f"抓取任务运行成功...当前抓取页面{n}")
+                logger.debug(f"抓取任务运行成功...当前抓取页面{n}")
                 article_data_obj = get_article_data(n)
                 self.__analyze_struct_text(article_data_obj)
                 time.sleep(random.randint(self.frequency_start_time,self.frequency_end_time))
+
 
     def __analyze_struct_text(self,article_data_obj):
         """解析文本结构体"""
@@ -138,7 +141,7 @@ class WeiBoFac:
                 for uid in self.spider_list:
                     nike_name = self.__get_account_info(uid)
                     if nike_name != "":
-                        logger.info(f"抓取任务运行成功...当前抓取{nike_name}")
+                        logger.debug(f"抓取任务运行成功...当前抓取{nike_name}")
                         self.__get_weibo_article(uid)
                         if "txt" in output_type:
                             for n in self.wb_text:

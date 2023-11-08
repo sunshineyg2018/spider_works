@@ -1,6 +1,6 @@
 import configparser
 import os
-import logging
+from loguru import logger
 
 
 class DisposeIni:
@@ -14,10 +14,6 @@ class DisposeIni:
         return self.config.items(sec)
 
 
-def init_log():
-    logger = logging.getLogger()
-    file_handler = logging.FileHandler('log.txt')
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
-    return logger
+def configure_logging():
+    # 创建一个logger对象
+    logger.add('log.log')
