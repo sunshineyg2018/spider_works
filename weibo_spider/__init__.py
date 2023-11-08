@@ -4,11 +4,6 @@
 # Author: 
 # Date:   2023/11/1
 # -------------------------------------------------------------------------------
-import logging
+from utils import init_log
 
-logger = logging.getLogger()
-file_handler = logging.FileHandler('log.txt')
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
-
+logger = init_log()
