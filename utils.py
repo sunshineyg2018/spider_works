@@ -3,7 +3,7 @@ import os
 
 
 class DisposeIni:
-    def __init__(self, filepath="config.ini"):
+    def __init__(self, filepath="local_config.ini"):
         config_path = os.path.dirname(os.path.realpath(__file__))
         config_path = os.path.join(config_path,filepath)
         self.config = configparser.ConfigParser()
