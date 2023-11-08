@@ -12,5 +12,5 @@ from weibo_spider.weibo import WeiBoFac
 
 if __name__ == "__main__":
     configure_logging()
-    WeiBoFac().output()
+    WeiBoFac().main()
 

@@ -4,7 +4,7 @@
 # Author: 
 # Date:   2023/11/1
 # -------------------------------------------------------------------------------
-
+import json
 import random
 import time
 from loguru import logger
@@ -18,6 +18,11 @@ class WeiBoFac:
     def __init__(self, input_cookie=None):
         self.wb_text = []
         self.ini = dict(DisposeIni().get_items("weibo"))
+        self.output_type = self.ini.get("output_type")
+        self.output_path = self.ini.get("output_path")
+        if self.output_path == "":
+            self.output_path = os.getcwd()
+        self.nike_name = ""
         try:
             self.frequency_start_time,self.frequency_end_time = self.ini["time_sleep"].split(",")
             self.frequency_start_time = int(self.frequency_start_time)
@@ -95,16 +100,16 @@ class WeiBoFac:
         # 获取按页数爬取的参数
         page_num = self.ini.get("page_num","")
 
-        if page_num != "" and isinstance(page_num,int):
+        if page_num != "":
+            page_num = int(page_num)
             for n in range(page_num):
                 n += 1
                 logger.debug(f"抓取任务运行成功...当前抓取页面{n}")
                 article_data_obj = get_article_data(n)
-                self.__analyze_struct_text(article_data_obj)
+                self.__analyze_struct_text(article_data_obj,n)
                 time.sleep(random.randint(self.frequency_start_time,self.frequency_end_time))
 
-
-    def __analyze_struct_text(self,article_data_obj):
+    def __analyze_struct_text(self,article_data_obj,page):
         """解析文本结构体"""
         long_text_list = article_data_obj.get("long_text_mblogid_list")
         if long_text_list is not None:
@@ -124,40 +129,34 @@ class WeiBoFac:
             for n in short_text_list:
                 self.wb_text.append(n)
 
-    def output(self):
-        # 获取输出方式
-        output_type = self.ini.get("output_type")
-        output_path = self.ini.get("output_path")
-        self.spider_list = self.spider_list if isinstance(self.spider_list,list) else [self.spider_list]
-        if output_path == "":
-            output_path = os.getcwd()
-
-        if output_type == "":
-            raise ValueError("至少选择一个输出方式")
+        # 输出
+        output_type = eval(self.output_type)
+        # 多种输出方式
+        if isinstance(output_type, list):
+            if "txt" in output_type:
+                for index,n in enumerate(self.wb_text):
+                    with open(os.path.join(self.output_path, f"{self.nike_name}.txt"), "a") as f:
+                        f.write(json.dumps({
+                            "index":index,
+                            "data":n
+                        },ensure_ascii=False))
+                        f.write("\n")
+        elif isinstance(output_type, str):
+            pass
         else:
-            output_type = eval(output_type)
-            # 多种输出方式
-            if isinstance(output_type,list):
-                for uid in self.spider_list:
-                    nike_name = self.__get_account_info(uid)
-                    if nike_name != "":
-                        logger.debug(f"抓取任务运行成功...当前抓取{nike_name}")
-                        self.__get_weibo_article(uid)
-                        if "txt" in output_type:
-                            for n in self.wb_text:
-                                with open(os.path.join(output_path,f"{nike_name}.txt"),"a") as f:
-                                    f.write(n)
-                                    f.write("\n")
-                    else:
-                        raise ValueError("请确认爬取账户名单的id是否正确")
-                    # 清空
-                    self.wb_text.clear()
+            raise ValueError("请确认参数类型,目前只支持list和str")
+        logger.debug(f"抓取任务运行成功...完成抓取页面,并写入成功{page}")
+        self.wb_text.clear()
 
-            elif isinstance(output_type,str):
-                pass
+    def main(self):
+        self.spider_list = self.spider_list if isinstance(self.spider_list,list) else [self.spider_list]
+        for uid in self.spider_list:
+            self.nike_name = self.__get_account_info(uid)
+            if self.nike_name != "":
+                logger.debug(f"抓取任务运行成功...当前抓取{self.nike_name}")
+                self.__get_weibo_article(uid)
             else:
-                raise ValueError("请确认参数类型,目前只支持list和str")
-
+                raise ValueError("请确认爬取账户名单的id是否正确")
 
 
 
