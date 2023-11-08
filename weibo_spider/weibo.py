@@ -4,15 +4,28 @@
 # Author: 
 # Date:   2023/11/1
 # -------------------------------------------------------------------------------
+import random
+import time
+
 from utils import DisposeIni
 import requests
 import os
+
+from weibo_spider import logger
 
 
 class WeiBoFac:
     def __init__(self, input_cookie=None):
         self.wb_text = []
         self.ini = dict(DisposeIni().get_items("weibo"))
+        try:
+            self.frequency_start_time,self.frequency_end_time = self.ini["time_sleep"].split(",")
+            self.frequency_start_time = int(self.frequency_start_time)
+            self.frequency_end_time = int(self.frequency_end_time)
+        except ValueError:
+            self.frequency_start_time = 1
+            self.frequency_end_time = 5
+
         # Todo 验证爬取名单 未写
         self.spider_list = eval(self.ini["spider_list"])
         if input_cookie is None:
@@ -38,6 +51,19 @@ class WeiBoFac:
                           'Chrome/118.0.0.0 Safari/537.36',
             'Cookie': input_cookie
         }
+
+    def __get_account_info(self,uid):
+        """获取账户信息"""
+        try:
+            url = "https://weibo.com/ajax/profile/info?uid={}"
+            res = requests.get(url, headers=self.headers)
+            if res.status_code == 200:
+                res_json = res.json()
+                return res_json["data"]["user"]["screen_name"]
+            return ""
+        except Exception as e:
+            logger.error(e.__traceback__)
+            return ""
 
     def __get_weibo_article(self, uid):
         """获取微博作者所发所有信息"""
@@ -70,8 +96,10 @@ class WeiBoFac:
         if page_num != "" and isinstance(page_num,int):
             for n in range(page_num):
                 n += 1
+                logger.info(f"抓取任务运行成功...当前抓取页面{n}")
                 article_data_obj = get_article_data(n)
                 self.__analyze_struct_text(article_data_obj)
+                time.sleep(random.randint(self.frequency_start_time,self.frequency_end_time))
 
     def __analyze_struct_text(self,article_data_obj):
         """解析文本结构体"""
@@ -86,6 +114,8 @@ class WeiBoFac:
                         continue
                     else:
                         self.wb_text.append(res_json["data"]["longTextContent"])
+                time.sleep(random.randint(self.frequency_start_time,self.frequency_end_time))
+
         short_text_list = article_data_obj.get("short_text_list")
         if short_text_list is not None:
             for n in short_text_list:
@@ -106,12 +136,17 @@ class WeiBoFac:
             # 多种输出方式
             if isinstance(output_type,list):
                 for uid in self.spider_list:
-                    self.__get_weibo_article(uid)
-                    if "txt" in output_type:
-                        for n in self.wb_text:
-                            with open(os.path.join(output_path,"")) as f:
-                                f.write(n)
-                                f.write("\n")
+                    nike_name = self.__get_account_info(uid)
+                    if nike_name != "":
+                        logger.info(f"抓取任务运行成功...当前抓取{nike_name}")
+                        self.__get_weibo_article(uid)
+                        if "txt" in output_type:
+                            for n in self.wb_text:
+                                with open(os.path.join(output_path,f"{nike_name}.txt"),"a") as f:
+                                    f.write(n)
+                                    f.write("\n")
+                    else:
+                        raise ValueError("请确认爬取账户名单的id是否正确")
                     # 清空
                     self.wb_text.clear()
 
