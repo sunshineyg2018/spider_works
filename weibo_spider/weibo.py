@@ -99,10 +99,11 @@ class WeiBoFac:
 
         # 获取按页数爬取的参数
         page_num = self.ini.get("page_num","")
-
+        start_page_num = self.ini.get("start_page_num")
+        start_page_num = 0 if start_page_num == "" else int(start_page_num)
         if page_num != "":
             page_num = int(page_num)
-            for n in range(page_num):
+            for n in range(start_page_num,page_num):
                 n += 1
                 logger.debug(f"抓取任务运行成功...当前抓取页面{n}")
                 article_data_obj = get_article_data(n)
