@@ -21,7 +21,7 @@
 |项目|参数|说明|
 |:---:|:---:|:---:|
 |weibo|cookie|你的cookie|
-|weibo|spider_list|爬取账号可以是list 也可以是str|
+|weibo|spider_account_list|爬取账号列表|
 |weibo|time_sleep|间隔时间 不设置为默认|
 |weibo|page_num|爬取页码数|
 

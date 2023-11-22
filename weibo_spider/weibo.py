@@ -32,7 +32,7 @@ class WeiBoFac:
             self.frequency_end_time = 5
 
         # Todo 验证爬取名单 未写
-        self.spider_list = eval(self.ini["spider_list"])
+        self.spider_list = eval(self.ini["spider_account_list"])
         if input_cookie is None:
             input_cookie = self.ini.get("cookie")
             if input_cookie == "":
