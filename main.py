@@ -5,12 +5,14 @@
 # Author: 
 # Date:   2023/11/3
 # -------------------------------------------------------------------------------
-import logging
 
+# from weibo_spider.weibo import WeiBoFac
 from utils import configure_logging
-from weibo_spider.weibo import WeiBoFac
+from zhihu_spider.zhihu import ZhiHuFac
 
 if __name__ == "__main__":
-    configure_logging()
-    WeiBoFac().main()
+    # configure_logging()
+    # ZhiHuFac().main()
+    for n in range(2,24+1):
+        print(n)
 

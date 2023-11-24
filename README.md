@@ -24,4 +24,6 @@
 |weibo|spider_account_list|爬取账号列表|
 |weibo|time_sleep|间隔时间 不设置为默认|
 |weibo|page_num|爬取页码数|
+|weibo|destination|目标|
+
 

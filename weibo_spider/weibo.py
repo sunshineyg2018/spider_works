@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------------------
-# Description:  
+# Description:  微博博文抓取-cookie版
 # Reference:
 # Author: 
 # Date:   2023/11/1
@@ -37,7 +37,6 @@ class WeiBoFac:
             input_cookie = self.ini.get("cookie")
             if input_cookie == "":
                 raise ValueError("请传入正确的cookie")
-
         self.headers = {
             'authority': 'weibo.com',
             'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,'
